@@ -2,11 +2,15 @@
 
 **UI-X**, is a Roblox plugin designed to convert existing UI into clean, framework-specific components, streamline the development of interactive user experiences, improve accessibility, and save developers' time.
 
+## Community
+
+Join the, community discord server here: [**UI-X**](https://discord.gg/ZQK9kK3PxN)
+
 ## Installation
 
 ### Local Installation
 
-1. Download the latest release from the [**Releases**]() page
+1. Download the latest release from the [**Releases**](https://github.com/ShakAsante/ui-x/releases/) page
 2. Open Roblox Studio.
 3. Install the plugin in Roblox Studio, via the plugins folder.
 4. Launch **UI X** from the **Plugins** tab.
@@ -14,14 +18,15 @@
 
 ### Roblox Creator Store
 
-1. Install **UI X** from the **Roblox Creator Store**.
+1. Install **UI X** from the [**Roblox Creator Store**](https://create.roblox.com/store/plugins).
 2. Open Roblox Studio.
 3. Launch **UI X** from the **Plugins** tab.
 4. Enjoy, use the tool.
 
-## Usage
 
 ## Features
+- Tools for developing UI & UX
+- ~~Export & Import from Figma w/ Auto Image Import~~
 - Easy Implementation & Installation
 - Fast and lightweight
 - Converts existing UI into reusable components
@@ -40,4 +45,4 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 ## License
 
 MIT License  
-See `LICENSE` file for details.
+See [**LICENSE**](https://raw.githubusercontent.com/ShakAsante/ui-x/refs/heads/main/LICENSE) file for details.
