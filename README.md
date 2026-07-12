@@ -43,7 +43,7 @@ Join the, community discord server  [**here**](https://discord.gg/ZQK9kK3PxN)
 - Built with extensibility in mind
 
 ## Contributions
-Pull requests are welcome! For major changes, please open an issue first to discuss what you’d like to change.
+View [this tab...](https://github.com/ShakAsante/ui-x/tree/main?tab=contributing-ov-file)
 
 ## License
 
