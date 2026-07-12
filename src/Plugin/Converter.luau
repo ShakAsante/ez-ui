@@ -1,7 +1,8 @@
 local ReplicatedStorage = game:GetService "ReplicatedStorage"
-local EnumList = "@self/Packages"
 local ClassData = require "@self/ClassData"
 local Object = require "../Object"
+local Enums = require "./Enums"
+local Settings = require "./Settings"
 
 --[=[
 	@class Converter
@@ -10,7 +11,7 @@ local Object = require "../Object"
 	that data as generated source code for a target UI framework (Fusion,
 	Roact, Vide, or native `Instance.new` calls).
 ]=]
-local Converter = Object:extend()
+local Converter = Object:Extend()
 
 type AcceptedTypes = string | boolean | number | Color3 | UDim2 | UDim | Vector2 | Vector3
 
@@ -27,19 +28,16 @@ type NativeComponent = string
 type FusionComponent = string
 type RoactComponent = string
 
-local Frameworks = EnumList.new("Frameworks", {
-	"Vide",
-	"Fusion",
-	"Roact",
-	"Native",
-})
-
 --[=[
 	Sets the default target framework to Fusion and exposes the `Frameworks` enum.
 ]=]
-function Converter:Init(): ()
-	self.framework = Frameworks.Fusion
-	self.frameworks = Frameworks
+function Converter:Init()
+	local settingsData = Settings.data
+	local scope = Settings.scope
+
+	scope:Observer(settingsData.framework):onChange(function()
+		self.framework = Settings.scope.peek(settingsData.framework)
+	end)
 end
 
 --[=[
@@ -53,35 +51,39 @@ function Converter:FormatValue(value: AcceptedTypes): string?
 	local type = typeof(value)
 
 	local formats = {
-		["string"] = function()
-			return string.format("%q", value)
+		["string"] = function(input: string)
+			return string.format("%q", input)
 		end,
 
-		["boolean"] = function()
-			return tostring(value)
+		["boolean"] = function(input: boolean)
+			return tostring(input)
 		end,
 
-		["number"] = function()
-			return tostring(value)
+		["number"] = function(input: number)
+			return tostring(input)
 		end,
 
-		["Color3"] = function()
+		["Color3"] = function(input: Color3)
 			return ("Color3.fromRGB(%d, %d, %d)"):format(
-				math.floor(value.R * 255),
-				math.floor(value.G * 255),
-				math.floor(value.B * 255)
+				math.floor(input.R * 255),
+				math.floor(input.G * 255),
+				math.floor(input.B * 255)
 			)
 		end,
 
-		["UDim2"] = function()
-			return ("UDim2.new(%s, %s, %s, %s)"):format(value.X.Scale, value.X.Offset, value.Y.Scale, value.Y.Offset)
+		["UDim2"] = function(input: UDim2)
+			local sx = input.X.Scale
+			local ox = input.X.Offset
+			local sy = input.Y.Scale
+			local oy = input.Y.Offset
+			return ("UDim2.new(%s, %s, %s, %s)"):format(sx, ox, sy, oy)
 		end,
 	}
 
 	local format = formats[type]
 
 	if format then
-		return format()
+		return format(value)
 	end
 
 	error("Unhandled type: " .. type)
@@ -94,6 +96,7 @@ end
 	@return string
 ]=]
 function Converter:Indent(level: number): string
+	level = level or 1
 	return string.rep("\t", level)
 end
 
@@ -157,10 +160,10 @@ end
 ]=]
 function Converter:MakeFusionComponent(data: SerializedObject): FusionComponent
 	local function Read(node: SerializedObject, offset: number?): string
-		offset = offset or 1
+		local depth = offset or 1
 		local ignoredProps = { "ClassName", "className", "Children" }
 
-		local indent = self:Indent(offset)
+		local indent = self:Indent(depth)
 
 		local lines = {}
 
@@ -170,14 +173,14 @@ function Converter:MakeFusionComponent(data: SerializedObject): FusionComponent
 			if table.find(ignoredProps, prop) then
 				continue
 			end
-			table.insert(lines, `{self:Indent(offset + 1)}{prop} = {self:FormatValue(value)},`)
+			table.insert(lines, `{self:Indent(depth + 1)}{prop} = {self:FormatValue(value)},`)
 		end
 
 		if #node.Children > 0 then
 			table.insert(lines, indent .. "\t[Children] = {")
 
 			for _, child in ipairs(node.Children) do
-				table.insert(lines, Read(child, offset + 2) .. ",")
+				table.insert(lines, Read(child, depth + 2) .. ",")
 			end
 
 			table.insert(lines, indent .. "\t},")
@@ -194,7 +197,7 @@ function Converter:MakeFusionComponent(data: SerializedObject): FusionComponent
 		"local Children = Fusion.Children",
 		"",
 		"return function(scope: Fusion.Scope<typeof(Fusion)>)",
-		"\treturn " .. Read(data),
+		"\treturn " .. Read(data, 1),
 		"end",
 	}, "\n")
 end
@@ -206,8 +209,7 @@ end
 	@return NativeComponent -- generated source text
 ]=]
 function Converter:MakeNativeComponent(data: SerializedObject): NativeComponent
-	local function Read(node: SerializedObject, offset: number?): string
-		offset = offset or 1
+	local function Read(node: SerializedObject, offset: number): string
 		local indent = self:Indent(offset)
 
 		local lines = {}
@@ -238,7 +240,7 @@ function Converter:MakeNativeComponent(data: SerializedObject): NativeComponent
 		"-- Native Roblox Instance Tree",
 		"local function build()",
 		self:Indent(1) .. "local root = nil",
-		self:Indent(1) .. Read(data),
+		self:Indent(1) .. Read(data, 1),
 		self:Indent(1) .. "return node",
 		"end",
 	}, "\n")
@@ -255,8 +257,7 @@ function Converter:MakeVideComponent(data: SerializedObject): VideComponent
 		return string.format("%q", str)
 	end
 
-	local function Read(node: SerializedObject, offset: number?): string
-		offset = offset or 1
+	local function Read(node: SerializedObject, offset: number): string
 		local indent = self:Indent(offset)
 
 		local lines = {}
@@ -326,7 +327,10 @@ function Converter:MakeRoactComponent(data: SerializedObject): RoactComponent
 			for _, child in ipairs(node.Children) do
 				local childName = child.Name or child.ClassName
 
-				table.insert(children, indent .. "\t[" .. Quote(childName) .. "] = " .. Read(child, offset + 1) .. ",")
+				table.insert(
+					children,
+					indent .. "\t[" .. Quote(childName) .. "] = " .. Read(child, (offset or 1) + 1) .. ","
+				)
 			end
 		end
 
@@ -370,10 +374,10 @@ end
 ]=]
 function Converter:MakeComponent(data: SerializedObject, framework: Framework): ()
 	local refs = {
-		[Frameworks.Roact] = self.MakeRoactComponent,
-		[Frameworks.Fusion] = self.MakeFusionComponent,
-		[Frameworks.Vide] = self.MakeVideComponent,
-		[Frameworks.Native] = self.MakeNativeComponent,
+		[Enums.Frameworks.Roact] = self.MakeRoactComponent,
+		[Enums.Frameworks.Fusion] = self.MakeFusionComponent,
+		[Enums.Frameworks.Vide] = self.MakeVideComponent,
+		[Enums.Frameworks.Native] = self.MakeNativeComponent,
 	}
 
 	refs[framework](self, data)
@@ -389,9 +393,9 @@ end
 ]=]
 function Converter:AssertFramework(enum: Framework?): ()
 	local refs = {
-		[Frameworks.Roact] = "Roact",
-		[Frameworks.Fusion] = "Fusion",
-		[Frameworks.Vide] = "Vide",
+		[Enums.Frameworks.Roact] = "Roact",
+		[Enums.Frameworks.Fusion] = "Fusion",
+		[Enums.Frameworks.Vide] = "Vide",
 	}
 
 	assert(refs[enum], "Unsupported framework")
@@ -399,7 +403,7 @@ function Converter:AssertFramework(enum: Framework?): ()
 	assert(path, refs[enum] .. " library not found")
 end
 
-function Converter:GetDefaultComponents(): ()
+function Converter:LoadtDefaultComponents(): ()
 	-- self:AssertPackages()
 end
 

@@ -1,6 +1,6 @@
 local Fusion = require "../../../../Packages/Fusion"
 
-return function(Scope: Fusion.Scope<any>, props: {})
+return function(Scope: any, props: any)
 	local UICorner = Scope:New "UICorner" {
 		CornerRadius = props.CornerRadius,
 		BottomLeftRadius = props.BottomLeftRadius,

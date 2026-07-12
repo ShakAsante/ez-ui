@@ -6,7 +6,7 @@ local Object = require "../Object"
 	Provides viewport-relative helpers for converting `UDim2` values between
 	scale and offset space.
 ]=]
-local Behaviour = Object:extend()
+local Behaviour = Object:Extend()
 
 --[=[
 	Initializes the cached viewport size and keeps it in sync whenever the
@@ -42,7 +42,7 @@ end
 	@param instance UIBase
 	@return UDim2
 ]=]
-function Behaviour:PositionToScale(instance: UIBase): UDim2
+function Behaviour:PositionToScale(instance): UDim2
 	local viewport = self:GetViewport()
 	local pos = instance.Position
 
@@ -56,7 +56,7 @@ end
 	@param instance UIBase
 	@return UDim2
 ]=]
-function Behaviour:PositionToOffset(instance: UIBase): UDim2
+function Behaviour:PositionToOffset(instance): UDim2
 	local viewport = self:GetViewport()
 	local pos = instance.Position
 
@@ -70,7 +70,7 @@ end
 	@param instance UIBase
 	@return UDim2
 ]=]
-function Behaviour:SizeToScale(instance: UIBase): UDim2
+function Behaviour:SizeToScale(instance): UDim2
 	local viewport = self:GetViewport()
 	local size = instance.Size
 
@@ -84,7 +84,7 @@ end
 	@param instance UIBase
 	@return UDim2
 ]=]
-function Behaviour:SizeToOffset(instance: UIBase): UDim2
+function Behaviour:SizeToOffset(instance): UDim2
 	local viewport = self:GetViewport()
 	local size = instance.Size
 

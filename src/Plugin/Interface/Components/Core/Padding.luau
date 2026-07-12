@@ -1,12 +1,12 @@
 local Fusion = require "../../../../Packages/Fusion"
 
-local DefaultProps = require("../DefaultProps")
+local DefaultProps = require "../DefaultProps"
 
-return function(Scope: Fusion.Scope<any>, Props: Fusion.PropertyTable)
-	return Scope:New("UIPadding")(DefaultProps({
-		PaddingTop = Props.PaddingTop,
-		PaddingBottom = Props.PaddingBottom,
-		PaddingLeft = Props.PaddingLeft,
-		PaddingRight = Props.PaddingRight,
-	}, Props))
+return function(Scope: any, props: any)
+	return Scope:New "UIPadding"(DefaultProps({
+		PaddingTop = props.PaddingTop,
+		PaddingBottom = props.PaddingBottom,
+		PaddingLeft = props.PaddingLeft,
+		PaddingRight = props.PaddingRight,
+	}, props))
 end

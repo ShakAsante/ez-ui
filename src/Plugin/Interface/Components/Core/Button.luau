@@ -4,15 +4,7 @@ local DefaultProps = require "../DefaultProps"
 local OnEvent = Fusion.OnEvent
 local Children = Fusion.Children
 
-local function Button(
-	scope: Fusion.Scope<any>,
-	props: {
-		onClick: (() -> ())?,
-		onHoverStart: (() -> ())?,
-		onHoverEnd: (() -> ())?,
-		native: { [any]: any }?,
-	}?
-)
+local function Button(scope: any, props: any)
 	local scale = scope:Value(1)
 	local clickSound = scope:New "Sound" {
 		SoundId = "rbxassetid://139800881181209",

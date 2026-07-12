@@ -6,15 +6,6 @@ type CurveFn = (t: number) -> number
 type ColorData = { [number]: Color3 }
 type NumberData = { [number]: number }
 
-export type GradientProps = {
-	Curve: CurveName?,
-	Samples: number?,
-	Rotation: number?,
-	Offset: Vector2?,
-	Color: ColorData?,
-	Transparency: NumberData?,
-}
-
 type Point<T> = { time: number, value: T }
 
 local Curves: { [CurveName]: CurveFn } = {
@@ -91,8 +82,8 @@ local function BuildSequence(
 	end
 end
 
-return function(Scope: Fusion.Scope<any>, Props: GradientProps): UIGradient
-	local curveFn = Curves[Props.Curve or "Linear"]
+return function(Scope: any, Props: any): UIGradient
+	local curveFn = Curves[Props.curve or "Linear"]
 	local samples = Props.Samples or 8
 
 	local Gradient = Scope:New "UIGradient" {

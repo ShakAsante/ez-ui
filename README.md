@@ -1,10 +1,13 @@
 # Overview
 
+<img src="https://gist.githubusercontent.com/cxmeel/0dbc95191f239b631c3874f4ccf114e2/raw/bb4634715f95ebb209b4e0bcdd4d2d98fe64c64c/github_sponsor-compact.svg" height="32" alt="GitHub Sponsor">
+<img src="https://gist.githubusercontent.com/cxmeel/0dbc95191f239b631c3874f4ccf114e2/raw/bb4634715f95ebb209b4e0bcdd4d2d98fe64c64c/roblox_dev.svg" height="32" alt="Roblox Developer">
+
 **UI-X**, is a Roblox plugin designed to convert existing UI into clean, framework-specific components, streamline the development of interactive user experiences, improve accessibility, and save developers' time.
 
 ## Community
 
-Join the, community discord server here: [**UI-X**](https://discord.gg/ZQK9kK3PxN)
+Join the, community discord server  [**here**](https://discord.gg/ZQK9kK3PxN)
 
 ## Installation
 

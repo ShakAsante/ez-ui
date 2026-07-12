@@ -1,9 +1,8 @@
-local Fusion = require "../../../../../Packages/Fusion"
 local Viewport = require "@self/Viewport"
 
 local REFERENCE_HEIGHT = 1080
 
-return function(scope: Fusion.Scope<any>, props)
+return function(scope: any, props: any)
 	return scope:New "UIStroke" {
 		Thickness = scope:Computed(function(use)
 			local viewport = use(Viewport)
